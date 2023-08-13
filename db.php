@@ -224,6 +224,19 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     // Close the connection
     $conn->close();
     ?>
+    <!-- Pagination links -->
+    
+
+    <?php
+    if ($totalPages > 1) {
+        echo '<div class="pagination">';
+        for ($i = 1; $i <= $totalPages; $i++) {
+            $activeClass = ($page === $i) ? 'active' : '';
+            echo '<a class="' . $activeClass . '" href="?page=' . $i . '">' . $i . '</a>';
+        }
+        echo '</div>';
+    }
+    ?>
      <footer class="footer">
     <div class="copy">&copy; Lafarge Warehouse</div>
     <div class="bottom-links">
