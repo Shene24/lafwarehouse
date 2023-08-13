@@ -280,7 +280,11 @@ if ($result->num_rows > 0) {
         
         echo '</div>';
     }
-    echo '<button class="redirect-button" onclick="redirectToOtherPage()">Go to Other Page with Selected Items</button>'; // Add the buttons
+    echo '<p id="selected-count">Items selected: 0</p>'; // Echo the selected items count paragraph
+    //create a buttom so it will go to the selected item page 
+    echo '<button class="btn btn-primary" onclick="location.href=\'http://localhost/lafargeStock/selectedItems.php\'">Selected Items</button>';
+
+   
 } else {
     echo "No data found.";
 }
@@ -326,12 +330,27 @@ if ($result->num_rows > 0) {
       </div>
     </div>
   </footer>
+
+  <?php
+// Your PHP code here...
+
+
+//echo '<button class="btn btn-primary" onclick="redirectToOtherPage()">Selected Items</button>'; // Echo the button
+?>
+
 <script>
+    // Your JavaScript code here...
+
+    console.log('Script started');
+
     const selectButtons = document.querySelectorAll('.select-button');
     let selectedItems = []; // Array to store selected items
 
     selectButtons.forEach(button => {
         button.addEventListener('click', function() {
+            // Log when a button is clicked
+            console.log('Button clicked:', this);
+
             const stockNo = this.getAttribute('data-stockno');
             const itemDiv = this.closest('.item');
             const selectedInfo = itemDiv.querySelector('.selected-info');
@@ -344,15 +363,43 @@ if ($result->num_rows > 0) {
                 selectedItems = selectedItems.filter(item => item !== stockNo); // Remove stockNo from selectedItems array
                 selectedInfo.textContent = '';
             }
+
+            // Log the selected items array after each click
+            console.log('Selected items:', selectedItems);
+            updateSelectedCount(); // Call the function to update selected items count
         });
     });
 
     function redirectToOtherPage() {
+        console.log('Redirecting to other page...');
+
         if (selectedItems.length > 0) {
             const queryString = selectedItems.map(item => 'selected[]=' + encodeURIComponent(item)).join('&');
-            window.location.href = 'otherpage.php?' + queryString; // Replace 'otherpage.php' with the actual page URL
+            console.log('Query string:', queryString);
+
+            const redirectURL = 'otherpage.php?' + queryString;
+            console.log('Redirect URL:', redirectURL);
+
+            // Check the constructed URL before redirection
+            if (confirm('Redirect to ' + redirectURL + '?')) {
+                window.location.href = redirectURL;
+            } else {
+                console.log('Redirection canceled.');
+            }
+        } else {
+            console.log('No items selected.');
         }
     }
+
+    function updateSelectedCount() {
+        const selectedCountElement = document.getElementById('selected-count');
+        selectedCountElement.textContent = 'Items selected: ' + selectedItems.length;
+    }
 </script>
+
+
+
+
+
 </body>
 </html>
