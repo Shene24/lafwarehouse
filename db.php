@@ -148,6 +148,34 @@ $result = $conn->query($sql);
       color: #a1a1a1;
       padding: 10px 20px;
     }
+    .pagination {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin-top: 20px;
+    }
+
+    .pagination a {
+        display: inline-block;
+        padding: 8px 12px;
+        margin: 0 5px;
+        border: 1px solid #ddd;
+        background-color: #f9f9f9;
+        text-decoration: none;
+        color: #333;
+        border-radius: 3px;
+    }
+
+    .pagination a.active {
+        background-color: #007bff;
+        color: white;
+        border: 1px solid #007bff;
+    }
+
+    .pagination .next {
+        margin-left: 5px;
+    }
+
   
 
 
@@ -226,17 +254,28 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     ?>
     <!-- Pagination links -->
     
-
-    <?php
+<div class= "pagination"> 
+     <?php
     if ($totalPages > 1) {
-        echo '<div class="pagination">';
-        for ($i = 1; $i <= $totalPages; $i++) {
+        if ($page > 1) {
+            echo '<a href="?page=' . ($page - 1) . '">&laquo; Previous</a>';
+        }
+
+        // Display up to 5 pages before and after the current page
+        $startPage = max(1, $page - 5);
+        $endPage = min($totalPages, $page + 5);
+
+        for ($i = $startPage; $i <= $endPage; $i++) {
             $activeClass = ($page === $i) ? 'active' : '';
             echo '<a class="' . $activeClass . '" href="?page=' . $i . '">' . $i . '</a>';
         }
-        echo '</div>';
+
+        if ($page < $totalPages) {
+            echo '<a class="next" href="?page=' . ($page + 1) . '">Next &raquo;</a>';
+        }
     }
     ?>
+    </div>
      <footer class="footer">
     <div class="copy">&copy; Lafarge Warehouse</div>
     <div class="bottom-links">
