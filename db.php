@@ -175,10 +175,43 @@ $result = $conn->query($sql);
     .pagination .next {
         margin-left: 5px;
     }
+    
+    .item {
+        border: 1px solid #ddd;
+        padding: 10px;
+        margin: 10px;
+    }
 
-  
+    .select-box {
+        margin-top: 5px; /* Adjust the spacing between image and checkbox */
+        margin-left: 180px;
+    }
 
+    .select-button {
+        width: 20px;
+        height: 20px;
+        background-color: white;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        cursor: pointer;
+        position: relative; /* Required for pseudo-element positioning */
+    }
 
+    .select-button.checked {
+        background-color: #007bff;
+        border-color: #007bff;
+        color: white;
+    }
+
+    .select-button.checked::after {
+        content: '\2713'; /* Unicode character for checkmark */
+        font-size: 14px;
+        line-height: 1;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+    }
     </style>
 
 <?php
@@ -233,25 +266,25 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 </form>
 
 
-        <?php
-        // Check if the query was executed successfully
-        if ($result->num_rows > 0) {
-            while ($row = $result->fetch_assoc()) {
-                echo '<div>';
-                echo '<img style="width: 200px;" src="http://localhost/lafargeStock/Images/' . $row['StockNO'] . '.jpeg"/>';
-                echo '<h5>Description: ' . $row["ItemDesc"] . '</h5>';
-                echo '<h5>Unit of Measurement: ' . $row["Uom"] . '</h5>';
-                echo '<h5>On Hand Quantity: ' . $row["Ohqty"] . '</h5>';
-                 echo '<h5>Location: ' . $row["Locators"] . '</h5>';
-                echo '</div>';
-            }
-        } else {
-            echo "No data found.";
-        }
-
-    // Close the connection
-    $conn->close();
-    ?>
+<?php
+if ($result->num_rows > 0) {
+    while ($row = $result->fetch_assoc()) {
+        echo '<div class="item">';
+        echo '<img style="width: 200px;" src="http://localhost/lafargeStock/Images/' . $row['StockNO'] . '.jpeg"/>';
+        echo '<div class="select-box"><button class="select-button" data-stockno="' . $row["StockNO"] . '"></button></div>'; // Add the selection button
+        echo '<h5>Description: ' . $row["ItemDesc"] . '</h5>';
+        echo '<h5>Unit of Measurement: ' . $row["Uom"] . '</h5>';
+        echo '<h5>On Hand Quantity: ' . $row["Ohqty"] . '</h5>';
+        echo '<h5>Location: ' . $row["Locators"] . '</h5>';
+        echo '<p class="selected-info"></p>'; // Add a paragraph for displaying selected information
+        
+        echo '</div>';
+    }
+    echo '<button class="redirect-button" onclick="redirectToOtherPage()">Go to Other Page with Selected Items</button>'; // Add the buttons
+} else {
+    echo "No data found.";
+}
+?>
     <!-- Pagination links -->
     
 <div class= "pagination"> 
@@ -294,10 +327,32 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     </div>
   </footer>
 <script>
-  const btn = document.querySelector('button');
-  btn.addEventListener('click', () => {
-    window.location.href = 'db.php';
-  });
+    const selectButtons = document.querySelectorAll('.select-button');
+    let selectedItems = []; // Array to store selected items
+
+    selectButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            const stockNo = this.getAttribute('data-stockno');
+            const itemDiv = this.closest('.item');
+            const selectedInfo = itemDiv.querySelector('.selected-info');
+            this.classList.toggle('checked');
+
+            if (this.classList.contains('checked')) {
+                selectedItems.push(stockNo); // Add stockNo to selectedItems array
+                selectedInfo.textContent = 'This item is selected';
+            } else {
+                selectedItems = selectedItems.filter(item => item !== stockNo); // Remove stockNo from selectedItems array
+                selectedInfo.textContent = '';
+            }
+        });
+    });
+
+    function redirectToOtherPage() {
+        if (selectedItems.length > 0) {
+            const queryString = selectedItems.map(item => 'selected[]=' + encodeURIComponent(item)).join('&');
+            window.location.href = 'otherpage.php?' + queryString; // Replace 'otherpage.php' with the actual page URL
+        }
+    }
 </script>
 </body>
 </html>
