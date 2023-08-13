@@ -13,28 +13,54 @@ if (!$conn) {
     // echo "Connected successfully";
 }
 
+// Define items per page and current page
+$itemsPerPage = 10;
+$page = isset($_GET['page']) ? intval($_GET['page']) : 1;
+
+// Calculate the starting index for the results
+$startIndex = ($page - 1) * $itemsPerPage;
+
 // Check if the form was submitted
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $itemClass = $_POST["itemClass"];
     $itemFamily = $_POST["itemFamily"];
 
-    $sql = "SELECT StockNO, ItemClass, ItemFamily, ItemDesc, Uom, Ohqty, Locators FROM testlafstock WHERE 1=1";
+    $sqlCount = "SELECT COUNT(*) as total FROM sellspareparts2 WHERE 1=1";
+
+    $sql = "SELECT StockNO, ItemClass, ItemFamily, ItemDesc, Uom, Ohqty, Locators FROM sellspareparts2 WHERE 1=1";
 
     if (!empty($itemClass)) {
         $sql .= " AND ItemClass = '$itemClass'";
+        $sqlCount .= " AND ItemClass = '$itemClass'";
     }
 
     if (!empty($itemFamily)) {
         $sql .= " AND ItemFamily = '$itemFamily'";
+        $sqlCount .= " AND ItemFamily = '$itemFamily'";
     }
+
+    // Adjust the SQL query for pagination
+    $sql .= " LIMIT $startIndex, $itemsPerPage";
 } else {
     // If the form is not submitted, show all data
-    $sql = "SELECT StockNO, ItemClass, ItemFamily, ItemDesc, Uom, Ohqty, Locators FROM testlafstock";
+    $sqlCount = "SELECT COUNT(*) as total FROM sellspareparts2";
+    $sql = "SELECT StockNO, ItemClass, ItemFamily, ItemDesc, Uom, Ohqty, Locators FROM sellspareparts2";
+
+    // Adjust the SQL query for pagination
+    $sql .= " LIMIT $startIndex, $itemsPerPage";
 }
+
+// Execute the count query to get total number of records
+$countResult = $conn->query($sqlCount);
+$totalRecords = $countResult->fetch_assoc()['total'];
+
+// Calculate the total number of pages
+$totalPages = ceil($totalRecords / $itemsPerPage);
 
 // Execute the query
 $result = $conn->query($sql);
 ?>
+
 
 <!DOCTYPE html>
 <html>
@@ -188,7 +214,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                 echo '<h5>Description: ' . $row["ItemDesc"] . '</h5>';
                 echo '<h5>Unit of Measurement: ' . $row["Uom"] . '</h5>';
                 echo '<h5>On Hand Quantity: ' . $row["Ohqty"] . '</h5>';
-                echo '<h5>Location: ' . $row["Locators"] . '</h5>';
+                 echo '<h5>Location: ' . $row["Locators"] . '</h5>';
                 echo '</div>';
             }
         } else {
