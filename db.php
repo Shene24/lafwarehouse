@@ -61,173 +61,32 @@ $totalPages = ceil($totalRecords / $itemsPerPage);
 $result = $conn->query($sql);
 ?>
 
-
 <!DOCTYPE html>
 <html>
 <head>
     <title>Items Data</title>
-    <style>
-        table {
-            border-collapse: collapse;
-            width: 100%;
-        }
-
-        th, td {
-            border: 1px solid black;
-            padding: 8px;
-            text-align: left;
-        }
-         /* CSS for header */
-    .header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      background-color: #f5f5f5;
-    }
+    <link rel="stylesheet" type="text/css" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
     
-
-    .header .logo {
-      font-size: 25px;
-      font-family: 'Sriracha', cursive;
-      color: #000;
-      text-decoration: none;
-      margin-left: 30px;
+    <?php
+    // Check if the form was submitted
+    if ($_SERVER["REQUEST_METHOD"] === "POST") {
+        // Retrieve the submitted itemClass and itemFamily values, or use default values if not set
+        $selectedItemClass = isset($_POST['itemClass']) ? $_POST['itemClass'] : '';
+        $selectedItemFamily = isset($_POST['itemFamily']) ? $_POST['itemFamily'] : '';
+    } else {
+        // If the form is loaded for the first time, set default values
+        $selectedItemClass = '';
+        $selectedItemFamily = '';
     }
-
-    .nav-items {
-      display: flex;
-      justify-content: space-around;
-      align-items: center;
-      background-color: #f5f5f5;
-      margin-right: 20px;
-    }
-
-    .nav-items a {
-      text-decoration: none;
-      color: #000;
-      padding: 35px 20px;
-    }
+    ?>
     
-    /* CSS for footer */
-    .footer {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      background-color: #191825;
-      padding: 40px 80px;
-    }
-
-    .footer .copy {
-      color: #fff;
-    }
-
-    .bottom-links {
-      display: flex;
-      justify-content: space-around;
-      align-items: center;
-      padding: 40px 0;
-    }
-
-    .bottom-links .links {
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      padding: 0 40px;
-    }
-
-    .bottom-links .links span {
-      font-size: 20px;
-      color: #fff;
-      text-transform: uppercase;
-      margin: 10px 0;
-    }
-
-    .bottom-links .links a {
-      text-decoration: none;
-      color: #a1a1a1;
-      padding: 10px 20px;
-    }
-    .pagination {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        margin-top: 20px;
-    }
-
-    .pagination a {
-        display: inline-block;
-        padding: 8px 12px;
-        margin: 0 5px;
-        border: 1px solid #ddd;
-        background-color: #f9f9f9;
-        text-decoration: none;
-        color: #333;
-        border-radius: 3px;
-    }
-
-    .pagination a.active {
-        background-color: #007bff;
-        color: white;
-        border: 1px solid #007bff;
-    }
-
-    .pagination .next {
-        margin-left: 5px;
-    }
-    
-    .item {
-        border: 1px solid #ddd;
-        padding: 10px;
-        margin: 10px;
-    }
-
-    .select-box {
-        margin-top: 5px; /* Adjust the spacing between image and checkbox */
-        margin-left: 180px;
-    }
-
-    .select-button {
-        width: 20px;
-        height: 20px;
-        background-color: white;
-        border: 1px solid #ccc;
-        border-radius: 4px;
-        cursor: pointer;
-        position: relative; /* Required for pseudo-element positioning */
-    }
-
-    .select-button.checked {
-        background-color: #007bff;
-        border-color: #007bff;
-        color: white;
-    }
-
-    .select-button.checked::after {
-        content: '\2713'; /* Unicode character for checkmark */
-        font-size: 14px;
-        line-height: 1;
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-    }
-    </style>
-
-<?php
-// Check if the form was submitted
-if ($_SERVER["REQUEST_METHOD"] === "POST") {
-    // Retrieve the submitted itemClass and itemFamily values, or use default values if not set
-    $selectedItemClass = isset($_POST['itemClass']) ? $_POST['itemClass'] : '';
-    $selectedItemFamily = isset($_POST['itemFamily']) ? $_POST['itemFamily'] : '';
-} else {
-    // If the form is loaded for the first time, set default values
-    $selectedItemClass = '';
-    $selectedItemFamily = '';
-}
-?>
+    <link rel="stylesheet" type="text/css" href="path/to/your/css/file.css">
 </head>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+<body>
+    <!-- Your HTML content here -->
+</body>
+</html>
 
 <body>
         <header class="header">
@@ -270,8 +129,8 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 if ($result->num_rows > 0) {
     while ($row = $result->fetch_assoc()) {
         echo '<div class="item">';
-        echo '<img style="width: 200px;" src="http://localhost/lafargeStock/Images/' . $row['StockNO'] . '.jpeg"/>';
-        echo '<div class="select-box"><button class="select-button" data-stockno="' . $row["StockNO"] . '"></button></div>'; // Add the selection button
+        echo '<img style="width: 200px;" src="http://localhost/lafargeStock/Images/' . $row['StockNO'] . '.jpg"/>';
+        echo '<div class="select-box">Buy Item <button class="select-button" data-stockno="' . $row["StockNO"] . '"></button></div>'; // Add the selection button
         echo '<h5>Description: ' . $row["ItemDesc"] . '</h5>';
         echo '<h5>Unit of Measurement: ' . $row["Uom"] . '</h5>';
         echo '<h5>On Hand Quantity: ' . $row["Ohqty"] . '</h5>';
@@ -396,10 +255,5 @@ if ($result->num_rows > 0) {
         selectedCountElement.textContent = 'Items selected: ' + selectedItems.length;
     }
 </script>
-
-
-
-
-
 </body>
 </html>

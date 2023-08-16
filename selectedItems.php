@@ -1,29 +1,38 @@
 <?php
 // Get the selected stock numbers from the query parameters
-$selectedStockNos = isset($_GET['selected']) ? explode(',', $_GET['selected']) : [];
+$selectedStockNos = isset($_GET['selected']) ? $_GET['selected'] : '';
+$selectedStockNos = filter_var($selectedStockNos, FILTER_SANITIZE_STRING);
 
-// Assuming you have a function to fetch item details based on stock number
-function getItemDetails($stockNo) {
-    // Implement your logic to fetch item details based on stock number
-    // Return item details as needed
-}
-
-// Display the selected items
-if (!empty($selectedStockNos)) {
-    foreach ($selectedStockNos as $stockNo) {
-        $itemDetails = getItemDetails($stockNo);
-        if ($itemDetails) {
-            // Display selected item details
-            echo '<div class="selected-item">';
-            echo '<img src="http://localhost/lafargeStock/Images/' . $stockNo . '.jpeg"/>';
-            echo '<h5>Description: ' . $itemDetails["ItemDesc"] . '</h5>';
-            echo '<h5>Unit of Measurement: ' . $itemDetails["Uom"] . '</h5>';
-            echo '<h5>On Hand Quantity: ' . $itemDetails["Ohqty"] . '</h5>';
-            echo '<h5>Location: ' . $itemDetails["Locators"] . '</h5>';
-            echo '</div>';
+// Validate and sanitize the selected stock numbers
+$validStockNos = [];
+if ($selectedStockNos !== '') {
+    $stockNosArray = explode(',', $selectedStockNos);
+    foreach ($stockNosArray as $stockNo) {
+        if (preg_match('/^\d+$/', $stockNo)) {
+            $validStockNos[] = $stockNo;
         }
     }
-} else { 
-    echo 'No items selected.';
 }
+
+// Convert the PHP array to a JavaScript array
+$selectedStockNosJSON = json_encode($validStockNos);
 ?>
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Selected Items</title>
+    <!-- Your head content here -->
+
+    <script>
+        // Convert the JSON-encoded array back to a JavaScript array
+        const selectedStockNos = <?php echo $selectedStockNosJSON; ?>;
+
+        // Print the selected data in the console
+        console.log('Selected Stock Numbers:', selectedStockNos);
+    </script>
+</head>
+<body>
+    <!-- Your body content here -->
+</body>
+</html>
