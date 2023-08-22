@@ -20,7 +20,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $_SESSION["loggedin"] = true;
 
             // Redirect to the index.html page
-            header("Location: index.html");
+            header("Location: main.html");
             exit;
         } else {
             echo "Login failed. Invalid password.";

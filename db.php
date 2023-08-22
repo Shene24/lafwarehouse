@@ -90,9 +90,9 @@ $result = $conn->query($sql);
 
 <body>
         <header class="header">
-            <a href="index.html" class="logo">Lafarge Warehouse</a>
+            <a href="main.html" class="logo">Lafarge Warehouse</a>
             <nav class="nav-items">
-                <a href="index.html">Home</a>
+                <a href="main.html">Home</a>
                 <!-- http://localhost/lafargeStock/db.php use this path-->
                 <a href="db.php">Items</a>
                 
@@ -107,6 +107,7 @@ $result = $conn->query($sql);
         <option value="" <?php echo ($selectedItemClass === '') ? 'selected' : ''; ?>>All</option>
         <option value="Maintenance Spare Parts" <?php echo ($selectedItemClass === 'Maintenance Spare Parts') ? 'selected' : ''; ?>>Maintenance Spare Parts</option>
         <option value="Wear Parts, Consumable Material" <?php echo ($selectedItemClass === 'Wear Parts, Consumable Material') ? 'selected' : ''; ?>>Wear Parts, Consumable Material</option>
+        
         <!-- Add more options for different item classes as needed -->
     </select>
 
@@ -118,6 +119,7 @@ $result = $conn->query($sql);
         <option value="Other Mechanical Parts" <?php echo ($selectedItemFamily === 'Other Mechanical Parts') ? 'selected' : ''; ?>>Other Mechanical Parts</option>
         <option value="Blowers, Compressors, Fans, Pumps" <?php echo ($selectedItemFamily === 'Blowers, Compressors, Fans, Pumps') ? 'selected' : ''; ?>>Blowers, Compressors, Fans, Pumps</option>
         <option value="Other Consumable Material" <?php echo ($selectedItemFamily === 'Other Consumable Material') ? 'selected' : ''; ?>>Other Consumable Material</option>
+        <option value="Bearings" <?php echo ($selectedItemFamily === 'Filter Elements') ? 'selected' : ''; ?>>Filter Elements</option>
         <!-- Add more options for different item families as needed -->
     </select>
 
@@ -193,8 +195,18 @@ if ($result->num_rows > 0) {
   <?php
 // Your PHP code here...
 
+if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['selected'])) {
+    $userID = $_SESSION['userID']; // Assuming you're using session for user authentication
+    $selectedItems = $_GET['selected'];
 
-//echo '<button class="btn btn-primary" onclick="redirectToOtherPage()">Selected Items</button>'; // Echo the button
+    foreach ($selectedItems as $itemID) {
+        $sql = "INSERT INTO orders (UserID, ItemID) VALUES ('$userID', '$itemID')";
+        // Execute the SQL query
+        // Handle any errors
+    }
+}
+?>
+
 ?>
 
 <script>
@@ -230,24 +242,10 @@ if ($result->num_rows > 0) {
     });
 
     function redirectToOtherPage() {
-        console.log('Redirecting to other page...');
+        // ... (Your existing redirectToOtherPage() function)
 
-        if (selectedItems.length > 0) {
-            const queryString = selectedItems.map(item => 'selected[]=' + encodeURIComponent(item)).join('&');
-            console.log('Query string:', queryString);
-
-            const redirectURL = 'otherpage.php?' + queryString;
-            console.log('Redirect URL:', redirectURL);
-
-            // Check the constructed URL before redirection
-            if (confirm('Redirect to ' + redirectURL + '?')) {
-                window.location.href = redirectURL;
-            } else {
-                console.log('Redirection canceled.');
-            }
-        } else {
-            console.log('No items selected.');
-        }
+        // Redirect to the PHP page that will process selected items
+        window.location.href = 'process_selected_items.php?' + queryString;
     }
 
     function updateSelectedCount() {
